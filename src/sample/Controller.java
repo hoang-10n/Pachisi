@@ -13,27 +13,32 @@ public class Controller {
     private boolean isHome;
     private ImageView old = null;
     private ImageView[] piece;
-    private int[] cur = new int[]{6,5}, possibleMove = new int[3], home = new int[]{-36,705,-1,670};
+    private static Integer[] cur = new Integer[2];
+    private int[] possibleMove = new int[3];
     private Player player = new Player();
     private Piece temp;
-
-    private int[][] pos = new int[][]{{287, 287, 287, 287, 287, 287, 287, 239, 191, 143, 95, 47, -1, -1, -1, 47, 95, 143, 191, 239, 287, 287, 287, 287, 287, 287, 287, 352, 417, 417, 417, 417, 417, 417, 417, 465, 513, 561, 609, 657, 705, 705, 705, 657, 609, 561, 513, 465, 417, 417, 417, 417, 417, 417, 417, 352},
-                                        {-36, 12, 60, 108, 156, 204, 252, 252, 252, 252, 252, 252, 252, 317, 382, 382, 382, 382, 382, 382, 382, 430, 478, 526, 574, 622, 670, 670, 670, 622, 574, 526, 478, 430, 382, 382, 382, 382, 382, 382, 382, 317, 252, 252, 252, 252, 252, 252, 252, 204, 156, 108, 60, 12, -36, -36}};
+    char turnColor;
+    private boolean turnOver = false;
+    private boolean firstTurn = true;
     @FXML
-    ImageView dice1, dice2, a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, d2, d3, move1, move2, move3;
+    ImageView dice1, dice2, b0, b1, b2, b3, r0, r1, r2, r3, y0, y1, y2, y3, g0, g1, g2, g3, move1, move2, move3;
 
     @FXML
     void initialize() {
         for (int i = 0; i < 6; i++) {
             dice[i] = new Image("dice//dice" + (i + 1) + ".jpg");
         }
-        piece = new ImageView[] {a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, d2, d3};
+        piece = new ImageView[]{b0, b1, b2, b3, r0, r1, r2, r3, y0, y1, y2, y3, g0, g1, g2, g3};
         player.initialize();
     }
 
+    public static Integer[] getCur() {
+        return cur;
+    }
+
     @FXML
-    void role() {
-        cur = player.roleDice();
+    void roll() {
+        cur = player.rollDice();
         dice1.setImage(dice[cur[0] - 1]);
 //        dice1.setLayoutX(r.nextInt(151) + 300);
 //        dice1.setLayoutY(r.nextInt(151) + 300);
@@ -44,6 +49,13 @@ public class Controller {
 //        dice2.setRotate(r.nextInt(361) - 180);
         if (old != null) old.setEffect(new Glow(0));
         old = null;
+        // swapping here so that the dice are not unnaturally sorted on the board
+        int swap;
+        if (cur[1] > cur[0]) {
+            swap = cur[1];
+            cur[1] = cur[0];
+            cur[0] = swap;
+        }
     }
 
     ImageView getPiece(String name) {
@@ -55,22 +67,23 @@ public class Controller {
 
 
     void transition(ImageView image, double x, double y) {
-        TranslateTransition transition = new TranslateTransition(Duration.seconds(1), image); //@@
+        //I'm changing this to 0.3 second because it was slow af
+        TranslateTransition transition = new TranslateTransition(Duration.seconds(0.3), image);
         transition.setToX(x - image.getX());
         transition.setToY(y - image.getY());
         transition.play();
     }
 
     void kickChess(Object[] kickedPiece) {
-        Piece chess = player.getPiece((String) kickedPiece[2]);
-        ImageView chessImage = getPiece((String) kickedPiece[2]);
+        Piece chess = player.getPiece((char) kickedPiece[2], (int) kickedPiece[3]);
+        ImageView chessImage = getPiece(kickedPiece[2] + "" + kickedPiece[3]);
         chess.setPos(0);
-        chess.setDistanceFromHome(0, chess.getName().charAt(0) - 'a');
+        chess.setDistanceFromHome(0, chess.getColor());
         double x = (int) kickedPiece[0], y = (int) kickedPiece[1];
         transition(chessImage, x, y);
     }
 
-    private void animate () {
+    private void animate() {
         old.toFront();
         move1.setVisible(false);
         move2.setVisible(false);
@@ -89,17 +102,27 @@ public class Controller {
         ImageView tmp = (ImageView) event.getSource();
         double x = tmp.getLayoutX();
         double y = tmp.getLayoutY();
+        turnOver = !turnOver;
         if (old != null) {
             transition(old, x, y);
+            if (firstTurn) {
+                firstTurn = false;
+                turnColor = old.getId().charAt(0);
+            } else {
+                if (turnOver) {
+                    turnColor = Constants.COLOR.get(Constants.COLOR.indexOf(turnColor) == 3 ? 0 : Constants.COLOR.indexOf(turnColor) + 1);
+                }
+            }
             int c = tmp.getId().charAt(4) - '1';
             if (!isHome) {
-                Object[] kick = player.kickable(possibleMove[c]); //@@
+                Object[] kick = player.kickable(possibleMove[c]); //TODO
                 if (kick != null) kickChess(kick);
                 temp.setPos(possibleMove[c]);
-                temp.setDistanceFromHome(possibleMove[c], old.getId().charAt(0) - 'a');
+                temp.setDistanceFromHome(possibleMove[c], old.getId().charAt(0));
             } else {
                 temp.setPos(-1);
-                player.updateHome(cur[c], temp.getName());
+                player.updateHome(cur[c], temp.getColor(), temp.getId());
+                cur[c] = null;
             }
             animate();
         }
@@ -111,6 +134,11 @@ public class Controller {
 //        move2.setVisible(false);
 //        move3.setVisible(false);
         ImageView temp = (ImageView) event.getSource();
+        if (!firstTurn) {
+            if (temp.getId().charAt(0) != turnColor) {
+                return;
+            }
+        }
         temp.setEffect(new Glow(0.5));
         showPossibleMove(temp);
         if (old != null && old != temp) {
@@ -120,13 +148,13 @@ public class Controller {
     }
 
     private void show(ImageView i, int p) {
-         if (p == -1) { //@@
+        if (p == -1) { //TODO what is this?
 //             i.setVisible(false);
-         } else {
-             i.setVisible(true);
-             i.setLayoutX(pos[0][p - 1]);
-             i.setLayoutY(pos[1][p - 1]);
-         }
+        } else {
+            i.setVisible(true);
+            i.setLayoutX(Constants.POS[0][p - 1]);
+            i.setLayoutY(Constants.POS[1][p - 1]);
+        }
     }
 
     private void show(ImageView i, double x, double y) {
@@ -136,19 +164,20 @@ public class Controller {
     }
 
     private void showHomeMove(ImageView temp) {
-        int t = temp.getId().charAt(0) -'a';
-        int k = temp.getId().charAt(1) -'0';
+        String tempId = temp.getId();
+        int t = Constants.COLOR.indexOf(tempId.charAt(0));
+        int k = temp.getId().charAt(1) - '0';
         double x = temp.getTranslateX() + temp.getX();
         double y = temp.getTranslateY() + temp.getY();
         int current;
         if (player.checkHome(cur[1], t, k)) {
             if (t == 0 || t == 3) {
-                current = (int) (Math.abs(y - home[t]) / 48);
+                current = (int) (Math.abs(y - Constants.HOME[t]) / 48);
                 if (cur[1] > current) show(move2, 352, y - 48 * (cur[1] - current) * (t == 3 ? 1 : -1));
                 if (cur[0] > current && player.checkHome(cur[0], t, k))
                     show(move1, 352, y - 48 * (cur[0] - current) * (t == 3 ? 1 : -1));
             } else {
-                current = (int) (Math.abs(x - home[t]) / 48);
+                current = (int) (Math.abs(x - Constants.HOME[t]) / 48);
                 if (cur[1] > current) show(move2, x - 48 * (cur[1] - current) * (t == 1 ? 1 : -1), 317);
                 if (cur[0] > current && player.checkHome(cur[0], t, k))
                     show(move1, x - 48 * (cur[0] - current) * (t == 1 ? 1 : -1), 317);
@@ -157,15 +186,21 @@ public class Controller {
     }
 
     private void showPossibleMove(ImageView i) {
-        temp = player.getPiece(i.getId());
+        String tempId = i.getId();
+        temp = player.getPiece(tempId.charAt(0), tempId.charAt(1) - '0');
         isHome = temp.isHome();
-        if (temp == null) System.out.println("Cannot find piece.");
+        if (temp == null) System.out.println("Cannot find piece");
         else {
-            if (!temp.isHome()) {
+            if (!isHome) {
                 possibleMove = player.returnPossibleMove(temp);
-                show(move1, possibleMove[0]);
-                show(move2, possibleMove[1]);
-                show(move3, possibleMove[2]);
+                if (possibleMove != null) {
+                    if (possibleMove[0] != -1)
+                        show(move1, possibleMove[0]);
+                    if (possibleMove[1] != -1)
+                        show(move2, possibleMove[1]);
+                    if (possibleMove[2] != -1)
+                        show(move3, possibleMove[2]);
+                }
             } else {
                 possibleMove = new int[]{cur[0], cur[1], -1};
                 showHomeMove(i);

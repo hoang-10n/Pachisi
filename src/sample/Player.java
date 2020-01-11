@@ -3,12 +3,9 @@ package sample;
 import java.util.Random;
 
 public class Player {
-    private Random rand =  new Random();
-    private int[] spawnPos = new int[] {1, 43, 15, 29};
+    private Random rand = new Random();
     private int[][] home = new int[4][4];
-
     private Piece[] chessPos = new Piece[16];
-    private int[] dice = new int[] {6, 5};
 //
 //    void print() {
 //        for (Piece i : chessPos) {
@@ -20,57 +17,87 @@ public class Player {
     void initialize() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                chessPos[i*4 + j] = new Piece(Character.toString('a'+ i) + j, 0, 56);
+                chessPos[i * 4 + j] = new Piece(Constants.COLOR.get(i), j, 0, 56);
             }
         }
         for (int i = 0; i < 4; i++) {
-            home[i] = new int[]{0,0,0,0};
+            home[i] = new int[]{0, 0, 0, 0};
         }
     }
 
-    int[] roleDice() {
-        dice[0] = rand.nextInt(6) + 1;
-        dice[1] = rand.nextInt(6) + 1;
-        int swap;
-        if (dice[1] > dice[0]) {
-            swap = dice[1];
-            dice[1] = dice[0];
-            dice[0] = swap;
+    /**
+     * roll 2 dice with random value 1-6
+     *
+     * @return an array of 2 int, element[0] is bigger or equal to element[1]
+     */
+    Integer[] rollDice() {
+        Integer[] dice = new Integer[2];
+        // normal operation would return random number from 1-6
+        //TODO change this back to normal when done with debugging
+//        for (int i = 0; i < dice.length; i++) {
+//            dice[i] = rand.nextInt(6) + 1;
+//        }
+        // however for ease of debugging, the chance of hitting value 5 and 6 is multiplied by 3
+        for (int i = 0; i < dice.length; i++) {
+            dice[i] = rand.nextInt(9) + 1;
+            if (dice[i] > 7) {
+                dice[i] = 6;
+            } else if (dice[i] > 5) {
+                dice[i] = 5;
+            }
         }
         return dice;
     }
 
     private boolean possibleMove(Piece piece, int dices, int t) {
         int j = piece.getDistanceFromHome();
-        String temp = piece.getName();
+        char temp = piece.getColor();
         for (Piece i : chessPos) {
-            if ((t < i.getPos() && t + dices > i.getPos() - (temp.charAt(0) == i.getName().charAt(0) ? 1 : 0)) || dices > j) return false;
+            if ((t < i.getPos() && t + dices > i.getPos() - (temp == i.getColor() ? 1 : 0)) || dices > j)
+                return false;
         }
         return true;
     }
 
-    Piece getPiece(String name) {
+    Piece getPiece(char color, int id) {
         for (Piece i : chessPos) {
-            if (i.getName().equals(name)) return i;
+            if (i.getColor() == color && i.getId() == id) return i;
         }
         return null;
     }
 
+    /**
+     * return a null if no move is remaining, return -1 if move slot if not possible, otherwise return possible move offset from current position
+     *
+     * @param piece piece that is querying its possible moves
+     * @return possible moves for the querying piece
+     */
     public int[] returnPossibleMove(Piece piece) {
-        int t = piece.getPos(), k = dice[0] + dice[1];
-        int[] possible = new int[] {-1,-1,-1};
-        if (piece.getPos() == 0 && possibleMove(piece, 1, t)) {
-            possible[2] = (dice[0] == 6) ? spawnPos[piece.getName().charAt(0) - 'a'] : -1;
+        Integer[] temp = Controller.getCur();
+        // if there is die value remaining
+        if (temp[0] != null || temp[1] != null) {
+            int t = piece.getPos(), k = temp[0] + temp[1];
+            int[] possible = new int[]{-1, -1, -1};
+            if (piece.getPos() == 0 && possibleMove(piece, 1, t)) {
+                possible[2] = (temp[0] == 6) ? Constants.SPAWN_POS[Constants.COLOR.indexOf(piece.getColor())] : -1;
+                return possible;
+            }
+            if (possibleMove(piece, temp[1], t)) {
+                if (temp[1] != null) {
+                    possible[0] = (t + temp[1] > 56 ? -56 + (t + temp[1]) : t + temp[1]);
+                }
+                if (possibleMove(piece, temp[0], t)) {
+                    if (temp[0] != null) {
+                        possible[1] = (t + temp[0] > 56 ? -56 + (t + temp[0]) : t + temp[0]);
+                        if (temp[1] != null) {
+                            possible[2] = possibleMove(piece, temp[0] + temp[1], t) ? (t + k > 56 ? -56 + (t + k) : t + k) : -1;
+                        }
+                    }
+                }
+            }
             return possible;
         }
-        if (possibleMove(piece, dice[1], t)) {
-            possible[0] = (t + dice[1] > 56 ? -56+ (t + dice[1]) : t + dice[1]);
-            if (possibleMove(piece, dice[0], t)) {
-                possible[1] = (t + dice[0] > 56 ? -56+ (t + dice[0]) : t + dice[0]);
-                possible[2] = possibleMove(piece, dice[0] + dice[1], t) ? (t + k > 56 ? -56+ (t + k) : t + k) : -1;
-            }
-        }
-        return possible;
+        return null;
     }
 //
 //    void print(int c) {
@@ -78,35 +105,33 @@ public class Player {
 //    }
 
     boolean checkHome(int dice, int c, int k) {
-        if (dice > home[c][k]) {
-            for (int i = 0; i < 4; i++) {
-                if (i != k && home[c][i] <= dice && home[c][i] != 0 && home[c][i] > home[c][k]) return false;
-            }
+        for (int i = 0; i < 4; i++) {
+            if (i != k && home[c][i] <= dice && home[c][i] != 0) return false;
         }
         return true;
     }
 
-    void updateHome(int dice, String name) {
-        int c = name.charAt(0) - 'a';
-        int t = name.charAt(1) - '0';
-        home[c][t] = dice;
+    void updateHome(int dice, char color, int id) {
+        int c = Constants.COLOR.indexOf(color);
+        home[c][id] = dice;
     }
 
-    Object[] kickable (int pos) {
-        String temp = "";
+    Object[] kickable(int pos) {
+        char tempColor = (char) -1;
+        int tempId = -1;
         boolean kickable = false;
         for (int k = 0; k < 16; k++) {
             if (pos == chessPos[k].getPos()) {
                 chessPos[k].setPos(0);
-                temp = chessPos[k].getName();
+                tempColor = chessPos[k].getColor();
+                tempId = chessPos[k].getId();
                 kickable = true;
                 break;
             }
         }
         if (kickable) {
-            int i = temp.charAt(0) - 'a';
-            int j = temp.charAt(1) - '0';
-            return new Object[]{60 + 130 * (j % 2) + 450 * (i % 2), 50 + 120 * (j / 2) + 450 * (i / 2),temp};
+            int i = Constants.COLOR.indexOf(tempColor);
+            return new Object[]{60 + 130 * (tempId % 2) + 450 * (i % 2), 50 + 120 * (tempId / 2) + 450 * (i / 2), tempColor, tempId};
         }
         return null;
     }
