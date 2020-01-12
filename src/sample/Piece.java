@@ -1,27 +1,16 @@
 package sample;
 
-import java.awt.*;
-
 public class Piece {
     private char color;
     private int id;
     private int pos;
     private int distanceFromHome;
-    private Image image;
 
     Piece(char color, int id, int pos, int distanceFromHome) {
         this.color = color;
         this.id = id;
         this.pos = pos;
         this.distanceFromHome = distanceFromHome;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
     }
 
     public boolean isHome() {
