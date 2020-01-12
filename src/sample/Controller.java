@@ -30,7 +30,7 @@ public class Controller {
     @FXML
     void initialize() {
         for (int i = 0; i < 6; i++) {
-            dice[i] = new Image("dice//dice" + (i + 1) + ".jpg");
+            dice[i] = new Image("dice//dice" + (i + 1) + ".png");
         }
         piece = new ImageView[]{b0, b1, b2, b3, r0, r1, r2, r3, y0, y1, y2, y3, g0, g1, g2, g3};
         player.initialize();
