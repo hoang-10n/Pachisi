@@ -18,7 +18,6 @@ public class Piece {
     }
 
     /**
-     *
      * @param pos
      * @param color
      */
@@ -35,12 +34,12 @@ public class Piece {
         return color;
     }
 
-    public void setPos(int pos) {
-        this.pos = pos;
-    }
-
     public int getPos() {
         return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
     }
 
     public int getId() {

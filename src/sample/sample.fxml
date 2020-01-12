@@ -8,86 +8,89 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="852.0" prefWidth="899.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
-   <AnchorPane layoutX="50.0" layoutY="50.0" prefHeight="750.0" prefWidth="700.0">
-      <ImageView fitHeight="750.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../dice/board.png" />
-      </ImageView>
-      <ImageView fx:id="dice2" fitHeight="150.0" fitWidth="40.0" layoutX="332.0" layoutY="375.0" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../dice/dice1.jpg" />
-      </ImageView>
-      <ImageView fx:id="dice1" fitHeight="150.0" fitWidth="40.0" layoutX="375.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
-         <Image url="@../dice/dice1.jpg" />
-      </ImageView>
-      <ImageView id="b0" fx:id="b0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="50.0">
-         <Image url="@../dice/blue0.png" />
-      </ImageView>
-      <ImageView id="g0" fx:id="g0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="500.0">
-         <Image url="@../dice/green0.png" />
-      </ImageView>
-      <ImageView id="b2" fx:id="b2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="170.0">
-         <Image url="@../dice/blue2.png" />
-      </ImageView>
-      <ImageView id="b3" fx:id="b3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="170.0">
-         <Image url="@../dice/blue3.png" />
-      </ImageView>
-      <ImageView id="b1" fx:id="b1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="50.0">
-         <Image url="@../dice/blue1.png" />
-      </ImageView>
-      <ImageView id="r0" fx:id="r0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="50.0">
-         <Image url="@../dice/red0.png" />
-      </ImageView>
-      <ImageView id="r2" fx:id="r2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="170.0">
-         <Image url="@../dice/red2.png" />
-      </ImageView>
-      <ImageView id="r1" fx:id="r1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="50.0">
-         <Image url="@../dice/red1.png" />
-      </ImageView>
-      <ImageView id="r3" fx:id="r3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="170.0">
-         <Image url="@../dice/red3.png" />
-      </ImageView>
-      <ImageView id="g2" fx:id="g2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="620.0">
-         <Image url="@../dice/green2.png" />
-      </ImageView>
-      <ImageView id="g1" fx:id="g1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="500.0">
-         <Image url="@../dice/green1.png" />
-      </ImageView>
-      <ImageView id="g3" fx:id="g3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="620.0">
-         <Image url="@../dice/green3.png" />
-      </ImageView>
-      <ImageView id="y0" fx:id="y0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="500.0">
-         <Image url="@../dice/yellow0.png" />
-      </ImageView>
-      <ImageView id="y2" fx:id="y2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="620.0">
-         <Image url="@../dice/yellow2.png" />
-      </ImageView>
-      <ImageView id="y1" fx:id="y1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="500.0">
-         <Image url="@../dice/yellow1.png" />
-      </ImageView>
-      <ImageView id="y3" fx:id="y3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="620.0">
-         <Image url="@../dice/yellow3.png" />
-      </ImageView>
-      <ImageView fx:id="move1" fitHeight="72.0" fitWidth="50.0" layoutX="287.0" layoutY="205.0" onMouseClicked="#moveChess" opacity="0.5" pickOnBounds="true" preserveRatio="true" visible="false">
-         <effect>
-            <ColorAdjust brightness="-1.0" />
-         </effect>
-         <Image url="@../dice/valid.png" />
-      </ImageView>
-      <ImageView fx:id="move3" fitHeight="72.0" fitWidth="50.0" layoutX="417.0" layoutY="205.0" onMouseClicked="#moveChess" opacity="0.5" pickOnBounds="true" preserveRatio="true" visible="false">
-         <effect>
-            <ColorAdjust brightness="-1.0" />
-         </effect>
-         <Image url="@../dice/valid.png" />
-      </ImageView>
-      <ImageView fx:id="move2" fitHeight="72.0" fitWidth="50.0" layoutX="417.0" layoutY="109.0" onMouseClicked="#moveChess" opacity="0.5" pickOnBounds="true" preserveRatio="true" visible="false">
-         <effect>
-            <ColorAdjust brightness="-1.0" />
-         </effect>
-         <Image url="@../dice/valid.png" />
-      </ImageView>
-   </AnchorPane>
-   <Button layoutX="811.0" layoutY="50.0" mnemonicParsing="false" onMouseClicked="#roll" text="Roll">
-      <font>
-         <Font name="Times New Roman" size="24.0" />
-      </font>
-   </Button>
+    <AnchorPane layoutX="50.0" layoutY="50.0" prefHeight="750.0" prefWidth="700.0">
+        <ImageView fitHeight="750.0" fitWidth="750.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../dice/board.png" />
+        </ImageView>
+        <ImageView fx:id="dice2" fitHeight="150.0" fitWidth="40.0" layoutX="332.0" layoutY="375.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../dice/dice1.jpg" />
+        </ImageView>
+        <ImageView fx:id="dice1" fitHeight="150.0" fitWidth="40.0" layoutX="375.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../dice/dice1.jpg" />
+        </ImageView>
+        <ImageView id="b0" fx:id="b0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="50.0">
+            <Image url="@../dice/b.png" />
+        </ImageView>
+        <ImageView id="g0" fx:id="g0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="500.0">
+            <Image url="@../dice/g.png" />
+        </ImageView>
+        <ImageView id="b2" fx:id="b2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="170.0">
+            <Image url="@../dice/b.png" />
+        </ImageView>
+        <ImageView id="b3" fx:id="b3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="170.0">
+            <Image url="@../dice/b.png" />
+        </ImageView>
+        <ImageView id="b1" fx:id="b1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="50.0">
+            <Image url="@../dice/b.png" />
+        </ImageView>
+        <ImageView id="r0" fx:id="r0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="50.0">
+            <Image url="@../dice/r.png" />
+        </ImageView>
+        <ImageView id="r2" fx:id="r2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="170.0">
+            <Image url="@../dice/r.png" />
+        </ImageView>
+        <ImageView id="r1" fx:id="r1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="50.0">
+            <Image url="@../dice/r.png" />
+        </ImageView>
+        <ImageView id="r3" fx:id="r3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="170.0">
+            <Image url="@../dice/r.png" />
+        </ImageView>
+        <ImageView id="g2" fx:id="g2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="510.0" y="620.0">
+            <Image url="@../dice/g.png" />
+        </ImageView>
+        <ImageView id="g1" fx:id="g1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="500.0">
+            <Image url="@../dice/g.png" />
+        </ImageView>
+        <ImageView id="g3" fx:id="g3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="640.0" y="620.0">
+            <Image url="@../dice/g.png" />
+        </ImageView>
+        <ImageView id="y0" fx:id="y0" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="500.0">
+            <Image url="@../dice/y.png" />
+        </ImageView>
+        <ImageView id="y2" fx:id="y2" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="60.0" y="620.0">
+            <Image url="@../dice/y.png" />
+        </ImageView>
+        <ImageView id="y1" fx:id="y1" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="500.0">
+            <Image url="@../dice/y.png" />
+        </ImageView>
+        <ImageView id="y3" fx:id="y3" fitHeight="72.0" fitWidth="50.0" onMouseClicked="#choose" pickOnBounds="true" preserveRatio="true" x="190.0" y="620.0">
+            <Image url="@../dice/y.png" />
+        </ImageView>
+        <ImageView fx:id="move1" fitHeight="72.0" fitWidth="50.0" layoutX="287.0" layoutY="205.0" onMouseClicked="#moveChess" opacity="0.5" pickOnBounds="true" preserveRatio="true" visible="false">
+            <effect>
+                <ColorAdjust brightness="-1.0" />
+            </effect>
+            <Image url="@../dice/noColor.png" />
+        </ImageView>
+        <ImageView fx:id="move3" fitHeight="72.0" fitWidth="50.0" layoutX="417.0" layoutY="205.0" onMouseClicked="#moveChess" opacity="0.5" pickOnBounds="true" preserveRatio="true" visible="false">
+            <effect>
+                <ColorAdjust brightness="-1.0" />
+            </effect>
+            <Image url="@../dice/noColor.png" />
+        </ImageView>
+        <ImageView fx:id="move2" fitHeight="72.0" fitWidth="50.0" layoutX="417.0" layoutY="109.0" onMouseClicked="#moveChess" opacity="0.5" pickOnBounds="true" preserveRatio="true" visible="false">
+            <effect>
+                <ColorAdjust brightness="-1.0" />
+            </effect>
+            <Image url="@../dice/noColor.png" />
+        </ImageView>
+    </AnchorPane>
+    <Button layoutX="811.0" layoutY="50.0" mnemonicParsing="false" onMouseClicked="#roll" text="Roll">
+        <font>
+            <Font name="Times New Roman" size="24.0" />
+        </font>
+    </Button>
+    <ImageView fx:id="turnIndicator" fitHeight="121.0" fitWidth="74.0" layoutX="811.0" layoutY="112.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../dice/noColor.png" />
+    </ImageView>
 </AnchorPane>

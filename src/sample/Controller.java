@@ -9,19 +9,23 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 
 public class Controller {
+    private static int[] cur = new int[2];
+    char turnColor;
+    @FXML
+    ImageView dice1, dice2, b0, b1, b2, b3, r0, r1, r2, r3, y0, y1, y2, y3, g0, g1, g2, g3, turnIndicator, move1, move2, move3;
     private Image[] dice = new Image[6];
     private boolean isHome;
     private ImageView old = null;
     private ImageView[] piece;
-    private static Integer[] cur = new Integer[2];
     private int[] possibleMove = new int[3];
     private Player player = new Player();
     private Piece temp;
-    char turnColor;
     private boolean turnOver = false;
     private boolean firstTurn = true;
-    @FXML
-    ImageView dice1, dice2, b0, b1, b2, b3, r0, r1, r2, r3, y0, y1, y2, y3, g0, g1, g2, g3, move1, move2, move3;
+
+    public static int[] getCur() {
+        return cur;
+    }
 
     @FXML
     void initialize() {
@@ -32,14 +36,11 @@ public class Controller {
         player.initialize();
     }
 
-    public static Integer[] getCur() {
-        return cur;
-    }
-
     @FXML
     void roll() {
         cur = player.rollDice();
         dice1.setImage(dice[cur[0] - 1]);
+        //TODO what is this?
 //        dice1.setLayoutX(r.nextInt(151) + 300);
 //        dice1.setLayoutY(r.nextInt(151) + 300);
 //        dice1.setRotate(r.nextInt(361) - 180);
@@ -102,30 +103,39 @@ public class Controller {
         ImageView tmp = (ImageView) event.getSource();
         double x = tmp.getLayoutX();
         double y = tmp.getLayoutY();
-        turnOver = !turnOver;
+        if (Controller.cur[0] != Controller.cur[1]) {
+            turnOver = !turnOver;
+        }
         if (old != null) {
             transition(old, x, y);
             if (firstTurn) {
                 firstTurn = false;
                 turnColor = old.getId().charAt(0);
             } else {
+                // change the color of the horse in turn when turn is over
                 if (turnOver) {
                     turnColor = Constants.COLOR.get(Constants.COLOR.indexOf(turnColor) == 3 ? 0 : Constants.COLOR.indexOf(turnColor) + 1);
                 }
             }
+            setTurnIndicator(turnColor);
             int c = tmp.getId().charAt(4) - '1';
             if (!isHome) {
-                Object[] kick = player.kickable(possibleMove[c]); //TODO
+                Object[] kick = player.canBeKicked(possibleMove[c]); //TODO
                 if (kick != null) kickChess(kick);
                 temp.setPos(possibleMove[c]);
                 temp.setDistanceFromHome(possibleMove[c], old.getId().charAt(0));
             } else {
                 temp.setPos(-1);
                 player.updateHome(cur[c], temp.getColor(), temp.getId());
-                cur[c] = null;
+                cur[c] = -1;
             }
             animate();
         }
+    }
+
+    @FXML
+    void setTurnIndicator(char turnColor) {
+        turnIndicator.setImage(new Image("dice//" + turnColor + ".png"));
     }
 
     @FXML
@@ -134,6 +144,7 @@ public class Controller {
 //        move2.setVisible(false);
 //        move3.setVisible(false);
         ImageView temp = (ImageView) event.getSource();
+        // if it's not first turn, don't let the player choose the illegal piece with wrong color
         if (!firstTurn) {
             if (temp.getId().charAt(0) != turnColor) {
                 return;
