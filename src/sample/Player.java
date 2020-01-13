@@ -1,11 +1,13 @@
 package sample;
 
+import javafx.scene.image.ImageView;
+
 import java.util.Random;
 
 public class Player {
     private Random rand = new Random();
     private int[][] home = new int[4][4];
-    private Piece[] chessPos = new Piece[16];
+    private static Piece[] chessPos = new Piece[16];
 //
 //    void print() {
 //        for (Piece i : chessPos) {
@@ -14,10 +16,17 @@ public class Player {
 //        System.out.println();
 //    }
 
-    void initialize() {
+    void initialize(ImageView[] pieces) {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                chessPos[i * 4 + j] = new Piece(Constants.COLOR.get(i), j, 0, 56);
+                for (ImageView piece : pieces) {
+                    if (piece.getId().charAt(0) == Constants.COLOR.get(i)) {
+                        if (piece.getId().charAt(1) - '0' == j) {
+                            chessPos[i * 4 + j] = new Piece(piece, Constants.COLOR.get(i), j, 0, 56);
+                            break;
+                        }
+                    }
+                }
             }
         }
         for (int i = 0; i < 4; i++) {
@@ -37,29 +46,52 @@ public class Player {
 //        for (int i = 0; i < dice.length; i++) {
 //            dice[i] = rand.nextInt(6) + 1;
 //        }
-        // however for ease of debugging, the chance of hitting value 5 and 6 is multiplied by 3
+        // however for ease of debugging, the chance of hitting value 6 is multiplied
         for (int i = 0; i < dice.length; i++) {
             dice[i] = rand.nextInt(9) + 1;
-            if (dice[i] > 7) {
+            if (dice[i] > 6) {
                 dice[i] = 6;
-            } else if (dice[i] > 5) {
-                dice[i] = 5;
             }
         }
         return dice;
     }
 
-    private boolean possibleMove(Piece piece, int dices, int t) {
+    /**
+     * check if a player of a certain color has any possible move
+     *
+     * @param color color of player to check
+     * @return true if possible move exists. False if not
+     */
+    static boolean thereIsPossibleMove(char color) {
+        for (Piece p : chessPos) {
+            if (p.getColor() == color) {
+                int[] temp = returnPossibleMove(p);
+                for (int i : temp) {
+                    if (i != -1) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean possibleMove(Piece piece, int die) {
+        if (die == -1) return false;
         int j = piece.getDistanceFromHome();
         char temp = piece.getColor();
         for (Piece i : chessPos) {
-            if ((t < i.getPos() && t + dices > i.getPos() - (temp == i.getColor() ? 1 : 0)) || dices > j)
+            // do not let horses of the same team kick each other!
+            if (piece.getPos() + die == i.getPos() && piece.getPos() != 0 && piece.getColor() == i.getColor()) {
+                return false;
+            }
+            if ((piece.getPos() < i.getPos() && piece.getPos() + die > i.getPos() - (temp == i.getColor() ? 1 : 0)) || die > j)
                 return false;
         }
         return true;
     }
 
-    Piece getPiece(char color, int id) {
+    static Piece getPiece(char color, int id) {
         for (Piece i : chessPos) {
             if (i.getColor() == color && i.getId() == id) return i;
         }
@@ -72,32 +104,40 @@ public class Player {
      * @param piece piece that is querying its possible moves
      * @return possible moves for the querying piece
      */
-    public int[] returnPossibleMove(Piece piece) {
+    public static int[] returnPossibleMove(Piece piece) {
         int[] temp = Controller.getCur();
         // if there is die value remaining
         if (temp[0] != -1 || temp[1] != -1) {
-            int t = piece.getPos(), k = temp[0] + temp[1];
+            int t = piece.getPos(), k = (temp[0] == -1 ? 0 : temp[0]) + (temp[1] == -1 ? 0 : temp[1]);
             int[] possible = new int[]{-1, -1, -1};
-            if (piece.getPos() == 0 && possibleMove(piece, 1, t)) {
-                possible[2] = (temp[0] == 6) ? Constants.SPAWN_POS[Constants.COLOR.indexOf(piece.getColor())] : -1;
-                return possible;
-            }
-            if (possibleMove(piece, temp[1], t)) {
-                if (temp[1] != -1) {
-                    possible[0] = (t + temp[1] > 56 ? -56 + (t + temp[1]) : t + temp[1]);
-                }
-                if (possibleMove(piece, temp[0], t)) {
-                    if (temp[0] != -1) {
-                        possible[1] = (t + temp[0] > 56 ? -56 + (t + temp[0]) : t + temp[0]);
-                        if (temp[1] != -1) {
-                            possible[2] = possibleMove(piece, temp[0] + temp[1], t) ? (t + k > 56 ? -56 + (t + k) : t + k) : -1;
+            if (piece.getPos() == 0) {
+                possible[0] = (Controller.leaveNestPossible()) ? Constants.SPAWN_POS[Constants.COLOR.indexOf(piece.getColor())] : -1;
+                if (possible[0] != -1) {
+                    t = piece.getStartingPoint();
+                    for (Piece p : chessPos) {
+                        if (p.getPos() == t) {
+                            return possible;
                         }
                     }
+                    if (possibleMove(new Piece(piece.getColor(), t), temp[1]))
+                        possible[1] = (t + temp[1] > 56 ? -56 + (t + temp[1]) : t + temp[1]);
                 }
+                return possible;
+            }
+            if (possibleMove(piece, temp[1])) {
+                possible[1] = (t + temp[1] > 56 ? -56 + (t + temp[1]) : t + temp[1]);
+            }
+            if (possibleMove(piece, temp[0])) {
+                possible[0] = (t + temp[0] > 56 ? -56 + (t + temp[0]) : t + temp[0]);
+                if (possibleMove(piece, temp[1]))
+                    possible[2] = possibleMove(piece, k) ? (t + k > 56 ? -56 + (t + k) : t + k) : -1;
+            }
+            if (temp[0] == temp[1]) {
+                possible[1] = -1;
             }
             return possible;
         }
-        return null;
+        return new int[]{-1, -1, -1};
     }
 //
 //    void print(int c) {
@@ -116,15 +156,15 @@ public class Player {
         home[c][id] = dice;
     }
 
-    Object[] canBeKicked(int pos) {
+    Piece canBeKicked(int pos) {
         char tempColor = (char) -1;
         int tempId = -1;
         boolean canBeKicked = false;
-        for (int k = 0; k < 16; k++) {
-            if (pos == chessPos[k].getPos()) {
-                chessPos[k].setPos(0);
-                tempColor = chessPos[k].getColor();
-                tempId = chessPos[k].getId();
+        for (Piece chessPo : chessPos) {
+            if (pos == chessPo.getPos()) {
+                chessPo.setPos(0);
+                tempColor = chessPo.getColor();
+                tempId = chessPo.getId();
                 canBeKicked = true;
                 break;
             }
@@ -132,7 +172,7 @@ public class Player {
         if (canBeKicked) {
             int i = Constants.COLOR.indexOf(tempColor);
             // return
-            return new Object[]{60 + 130 * (tempId % 2) + 450 * (i % 2), 50 + 120 * (tempId / 2) + 450 * (i / 2), tempColor, tempId};
+            return getPiece(tempColor, tempId);
         }
         return null;
     }

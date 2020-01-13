@@ -17,6 +17,14 @@ public class MoveWrapper {
         this.location = location;
     }
 
+    public double getFitHeight() {
+        return move.getFitHeight();
+    }
+
+    public double getFitWidth() {
+        return move.getFitWidth();
+    }
+
     void setVisible(boolean boo) {
         move.setVisible(boo);
     }
